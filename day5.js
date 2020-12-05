@@ -947,3 +947,34 @@ rows.forEach(row => {
 });
 console.log(maxID);
 // 871 is correct
+
+
+/*
+--- Part Two ---
+Ding! The "fasten seat belt" signs have turned on. Time to find your seat.
+
+It's a completely full flight, so your seat should be the only missing boarding pass in your list. However, there's a catch: some of the seats at the very front and back of the plane don't exist on this aircraft, so they'll be missing from your list as well.
+
+Your seat wasn't at the very front or back, though; the seats with IDs +1 and -1 from yours will be in your list.
+
+What is the ID of your seat?
+*/
+
+let allSeats = {};
+let minID;
+
+rows.forEach(row => {
+  let thisSeatID = getSeatID(row);
+  allSeats[thisSeatID] = true;
+  if (!minID || thisSeatID < minID) {
+    minID = thisSeatID;
+  }
+});
+
+for (let i = minID; i < maxID; i++) {
+  if ((allSeats[i - 1] && allSeats[i + 1]) && !allSeats[i]) {
+    console.log(i);
+    // 640 is correct
+    return;
+  }
+}
