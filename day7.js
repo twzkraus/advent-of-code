@@ -629,8 +629,8 @@ light brown bags contain 3 drab brown bags, 4 dark violet bags, 3 faded indigo b
 get rules by splitting up strings
 for each color, determine the type of bag it could be contained within
 */
-const countBags = (puzzle, color) => {
 
+const getBagData = (puzzle) => {
   const Bag = function(color) {
     this.color = color;
     this.canContain = [];
@@ -662,7 +662,12 @@ const countBags = (puzzle, color) => {
       }
     });
   });
+  return data;
+};
 
+const countPossParentBags = (puzzle, color) => {
+
+  const data = getBagData(puzzle);
   const getAllParents = (color) => {
     let parents = {};
     data[color].canBeIn.forEach(parent => {
@@ -678,9 +683,9 @@ const countBags = (puzzle, color) => {
   };
 
   return countAllParents(color);
-}
+};
 
-console.log(countBags(puzzle, 'shiny gold'));
+console.log('part 1 attempt is', countPossParentBags(puzzle, 'shiny gold'));
 // 468 was too high
 // 248 was correct after only looking at uniques--used Object.assign() rather than total++;
 
@@ -697,4 +702,96 @@ faded blue bags contain no other bags.
 dotted black bags contain no other bags.`;
 // should be: bright white, muted yellow, dark orange, light red--I think I'm double counting dark orange, because it can hold bright white OR muted yellow
 
-console.log(countBags(example, 'shiny gold'), 'should be 4');
+console.log(countPossParentBags(example, 'shiny gold'), 'should be 4');
+
+/*
+--- Part Two ---
+It's getting pretty expensive to fly these days - not because of ticket prices, but because of the ridiculous number of bags you need to buy!
+
+Consider again your shiny gold bag and the rules from the above example:
+
+faded blue bags contain 0 other bags.
+dotted black bags contain 0 other bags.
+vibrant plum bags contain 11 other bags: 5 faded blue bags and 6 dotted black bags.
+dark olive bags contain 7 other bags: 3 faded blue bags and 4 dotted black bags.
+So, a single shiny gold bag must contain 1 dark olive bag (and the 7 bags within it) plus 2 vibrant plum bags (and the 11 bags within each of those): 1 + 1*7 + 2 + 2*11 = 32 bags!
+
+Of course, the actual rules have a small chance of going several levels deeper than this example; be sure to count all of the bags, even if the nesting becomes topologically impractical!
+
+Here's another example:
+
+shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags.
+In this example, a single shiny gold bag must contain 126 other bags.
+
+How many individual bags are required inside your single shiny gold bag?
+*/
+
+const countAllChildBags = (puzzle, color, data) => {
+  if (!data) {
+    data = getBagData2(puzzle);
+  }
+  let count = 1;
+  for (let key in data[color].canContain) {
+    count += data[color].canContain[key] * countAllChildBags(puzzle, key, data);
+  }
+  return count;
+};
+
+const getBagData2 = (puzzle) => {
+  const Bag = function(color) {
+    this.color = color;
+    this.canContain = {};
+    this.canBeIn = [];
+  };
+
+  const data = {};
+
+  const addChild = (parent, child, qty) => {
+    if (!data[parent]) {
+      data[parent] = new Bag(parent);
+    }
+    if (!data[child]) {
+      data[child] = new Bag(child);
+    }
+    data[parent].canContain[child] = qty;
+    data[child].canBeIn.push(parent);
+  }
+
+  const lines = puzzle.split('\n');
+  lines.forEach(line => {
+    let [parentColor, allRules] = line.split(' bags contain ');
+    rules = allRules.split(', ');
+    rules.forEach(rule => {
+      if (rule !== 'no other bags.') {
+        let info = rule.split(' bag')[0];
+        let qty = parseInt(info.slice(0, 2));
+        let childColor = info.slice(2);
+        addChild(parentColor, childColor, qty);
+      }
+    });
+  });
+  return data;
+};
+
+const p2ex = `shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags.`;
+
+const getPart2Ans = (puzzle, color) => {
+  return countAllChildBags(puzzle, color) - 1;
+}
+
+console.log(getPart2Ans(p2ex, 'shiny gold'), 'should be 126' );
+
+console.log('part 2 attempt is', getPart2Ans(puzzle, 'shiny gold'));
+// 57281 is correct!
