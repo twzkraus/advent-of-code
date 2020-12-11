@@ -739,7 +739,7 @@ const solvePart1 = (puzzle) => {
       currentLineIdx = currentLineIdx + lineOffset;
     }
   }
-}
+};
 
 const ex1 = `nop +0
 acc +1
@@ -791,4 +791,38 @@ After the last instruction (acc +6), the program terminates by attempting to run
 Fix the program so that it terminates normally by changing exactly one jmp (to nop) or nop (to jmp). What is the value of the accumulator after the program terminates?
 */
 
+/*
+  convert one jmp to a nop or vice-versa
+  if you ever get to termination line, you're done. Return accumulator
+*/
 
+const solvePart2 = (puzzle) => {
+  const lines = puzzle.split('\n');
+  const terminationLine = lines.length;
+  let currentLineIdx = 0;
+  let accum = 0;
+  const visited = {};
+  const isInfinite = {};
+
+  const isFinite = (lineNum) => {
+    let offset = executeLine(lineNum, 0);
+    if ((lineNum + offset) === terminationLine) {
+      return true;
+    } else {
+      return isFinite(lineNum + offset);
+    }
+  }
+
+  let isInfiniteLoop = false;
+  while (!isInfiniteLoop) {
+    if (visited[currentLineIdx]) {
+      isInfiniteLoop = true;
+    } else {
+      visited[currentLineIdx] = true;
+      let currentLine = lines[currentLineIdx];
+      [lineOffset, accum] = executeLine(currentLine, accum);
+      currentLineIdx = currentLineIdx + lineOffset;
+    }
+  }
+  // found the infinite loop spot: reverse execute until nop or jmp
+};
