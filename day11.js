@@ -186,3 +186,66 @@ L.LLLLL.LL
 LLLLLLLLLL
 L.LLLLLL.L
 L.LLLLL.LL`;
+
+// If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied.
+// If a seat is occupied (#) and four or more seats adjacent to it are also occupied, the seat becomes empty.
+// Otherwise, the seat's state does not change.
+// Floor (.) never changes; seats don't move, and nobody sits on the floor.
+
+const solvePart1 = (puzzle) => {
+  // i: puzzle
+  // o: # of seats occupied when no seats change anymore
+
+  const seats = puzzle.split('\n').map(row => row.split(''));
+
+  const isSeat = (i, j) => {
+    return seats[i][j] === 'L' || seats[i][j] === '#';
+  }
+
+  const isEmpty = (i, j) => {
+    return seats[i][j] === 'L';
+  }
+
+  const countOccupiedNeighbors = (row, col) => {
+    let neighbors = [];
+    for (let i = row - 1; i <= row + 1; i++) {
+      for (let j = col - 1; j <= col + 1; j++) {
+        if (!(i === row && j === col)) {
+          neighbors.push([i, j]);
+        }
+      }
+    }
+
+    let countOcc = 0;
+    neighbors.forEach(neighbor => {
+      if (isSeat(...neighbor) && isEmpty(...neighbor)) {
+        countOcc++;
+      }
+    });
+
+    return countOcc;
+  }
+
+  const fillSeat = (i, j) => {
+    seats[i][j] = '#';
+  }
+
+  const clearSeat = (i, j) => {
+    seats[i][j] = 'L';
+  }
+
+  // visit each seat, check if its neighbors and decide whether it should be filled
+  for (let i = 0; i < seats.length; i++) {
+    for (let j = 0; j < seats[i].length; j++) {
+      let numOcc = countOccupiedNeighbors(i, j);
+      if (numOcc === 0 && isSeat(i, j)) {
+        fillSeat(i, j);
+      } else if (numOcc >= 4 && isSeat(i, j)) {
+        clearSeat(i, j);
+      }
+    }
+  }
+  console.log(seats);
+};
+
+solvePart1(ex);
