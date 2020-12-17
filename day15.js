@@ -117,3 +117,35 @@ assertEqual(solvePart1(ex6, 2020), expect6);
 
 console.log('part 1 attempt is', solvePart1(puzzle, 2020));
 // 1294 is correct
+
+/*
+--- Part Two ---
+Impressed, the Elves issue you a challenge: determine the 30000000th number spoken. For example, given the same starting numbers as above:
+
+Given 0,3,6, the 30000000th number spoken is 175594.
+Given 1,3,2, the 30000000th number spoken is 2578.
+Given 2,1,3, the 30000000th number spoken is 3544142.
+Given 1,2,3, the 30000000th number spoken is 261214.
+Given 2,3,1, the 30000000th number spoken is 6895259.
+Given 3,2,1, the 30000000th number spoken is 18.
+Given 3,1,2, the 30000000th number spoken is 362.
+Given your starting numbers, what will be the 30000000th number spoken?
+
+*/
+
+const p2expect1 = 175594;
+const p2expect2 = 2578;
+const p2expect3 = 261214;
+const p2expect4 = 6895259;
+const p2expect5 = 18;
+const p2expect6 = 362;
+
+// assertEqual(solvePart1(ex1, 30000000), p2expect1);
+// assertEqual(solvePart1(ex2, 30000000), p2expect2);
+// assertEqual(solvePart1(ex3, 30000000), p2expect3);
+// assertEqual(solvePart1(ex4, 30000000), p2expect4);
+// assertEqual(solvePart1(ex5, 30000000), p2expect5);
+// assertEqual(solvePart1(ex6, 30000000), p2expect6);
+
+console.log('part 2 attempt is', solvePart1(puzzle, 30000000));
+// 573522 is correct!
