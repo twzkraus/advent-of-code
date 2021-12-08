@@ -1030,7 +1030,7 @@ forward 6
 forward 3
 up 4
 forward 3
-forward 6`
+forward 6`;
 
 // const directionVectors = {
 //   forward:[1,0],
@@ -1079,27 +1079,27 @@ Using this new interpretation of the commands, calculate the horizontal position
 */
 
 const getNewPosition = (position, direction, val) => {
-  if (direction === 'down') {
+  if (direction === "down") {
     position[2] += val;
-  } else if (direction === 'up') {
+  } else if (direction === "up") {
     position[2] -= val;
-  } else if (direction === 'forward') {
+  } else if (direction === "forward") {
     position[0] += val;
     position[1] = position[1] + position[2] * val;
   }
   return position;
-}
+};
 
-const instructions = puzzleInput.split('\n');
+const instructions = puzzleInput.split("\n");
 let position = [0, 0, 0];
 instructions.forEach((ins) => {
-  const [direction, val] = ins.split(' ');
+  const [direction, val] = ins.split(" ");
   if (direction) {
-    position = getNewPosition(position, direction, parseInt(val))
+    position = getNewPosition(position, direction, parseInt(val));
   }
 });
 
-console.log('part 2 answer is', position[0] * position[1])
+console.log("part 2 answer is", position[0] * position[1]);
 
 // part 2 test
 // const testInput = `forward 5

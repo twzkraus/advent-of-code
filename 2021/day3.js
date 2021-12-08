@@ -1037,38 +1037,38 @@ const puzzleInput = `111010101100
 
 const getPart1Solution = (input) => {
   let counts = [];
-  const vals = input.split('\n');
+  const vals = input.split("\n");
   while (counts.length < vals[0].length) {
-    counts.push({0: 0, 1: 0});
-  };
+    counts.push({ 0: 0, 1: 0 });
+  }
   vals.forEach((val) => {
     counts = updateCounts(val, counts);
   });
   const [gammaRate, epsilonRate] = getRatesFromCounts(counts);
-  return parseInt(gammaRate, 2) * parseInt(epsilonRate, 2)
+  return parseInt(gammaRate, 2) * parseInt(epsilonRate, 2);
 };
 
 const updateCounts = (value, counts) => {
   const updated = [];
-  value.split('').forEach((digit, i) => {
-    if (digit === '1') {
+  value.split("").forEach((digit, i) => {
+    if (digit === "1") {
       updated.push({
         0: counts[i][0],
         1: counts[i][1] + 1,
-      })
+      });
     } else {
       updated.push({
         0: counts[i][0] + 1,
         1: counts[i][1],
-      })
+      });
     }
   });
   return updated;
-}
+};
 
 const getRatesFromCounts = (counts) => {
-  let gamma = '';
-  let epsilon = '';
+  let gamma = "";
+  let epsilon = "";
   counts.forEach((count) => {
     if (count[0] > count[1]) {
       gamma += 0;
@@ -1077,11 +1077,11 @@ const getRatesFromCounts = (counts) => {
       gamma += 1;
       epsilon += 0;
     }
-  })
-  return [gamma, epsilon]
-}
+  });
+  return [gamma, epsilon];
+};
 
-console.log('part 1 attempt', getPart1Solution(puzzleInput))
+console.log("part 1 attempt", getPart1Solution(puzzleInput));
 
 /*
 --- Part Two ---
@@ -1116,33 +1116,34 @@ Use the binary numbers in your diagnostic report to calculate the oxygen generat
 */
 
 const solvePart2 = (puzzle) => {
-  const numbers = puzzle.split('\n');
+  const numbers = puzzle.split("\n");
   const oxyRating = getOxygenGeneratorRating(numbers);
   const co2Rating = getCo2ScrubberRating(numbers);
   return parseInt(oxyRating, 2) * parseInt(co2Rating, 2);
-}
+};
 
 const getOxygenGeneratorRating = (nums) => getGenericRating(nums, true);
 
-
-const getCo2ScrubberRating = (nums) =>  getGenericRating(nums, false);
-
+const getCo2ScrubberRating = (nums) => getGenericRating(nums, false);
 
 const getGenericRating = (nums, most) => {
   let currentIdx = 0;
-  let valToFilterBy = '';
+  let valToFilterBy = "";
   while (nums.length > 1) {
-    valToFilterBy = getMostOrLeastCommonAtIndex(nums, currentIdx, most)
+    valToFilterBy = getMostOrLeastCommonAtIndex(nums, currentIdx, most);
     nums = filterByNumAtIdx(nums, valToFilterBy.toString(), currentIdx);
     currentIdx++;
   }
   return nums[0];
-}
+};
 
 const getMostOrLeastCommonAtIndex = (numbers, idx, most) => {
-  const counts = numbers.reduce((composite, num) => {
-    return { ...composite, [num[idx]]: composite[num[idx]] + 1 };
-  }, {1: 0, 0: 0})
+  const counts = numbers.reduce(
+    (composite, num) => {
+      return { ...composite, [num[idx]]: composite[num[idx]] + 1 };
+    },
+    { 1: 0, 0: 0 }
+  );
   if (counts[1] === counts[0]) {
     return most ? 1 : 0;
   }
@@ -1151,11 +1152,11 @@ const getMostOrLeastCommonAtIndex = (numbers, idx, most) => {
   } else {
     return counts[0] > counts[1] ? 1 : 0;
   }
-}
+};
 
 const filterByNumAtIdx = (numbers, value, idx) => {
-  return numbers.filter((num) => num[idx] === value)
-}
+  return numbers.filter((num) => num[idx] === value);
+};
 const sampleInput = `00100
 11110
 10110
@@ -1169,4 +1170,4 @@ const sampleInput = `00100
 00010
 01010`;
 // console.log('part 2 sample answer is', solvePart2(sampleInput))
-console.log('part 2 answer is', solvePart2(puzzleInput));
+console.log("part 2 answer is", solvePart2(puzzleInput));
