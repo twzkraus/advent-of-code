@@ -54,6 +54,27 @@ The score of the winning board can now be calculated. Start by finding the sum o
 
 To guarantee victory against the giant squid, figure out which board will win first. What will your final score be if you choose that board?
 */
+
+const exampleCallOrder = `7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1`;
+
+const rawExampleBoards = `22 13 17 11  0
+ 8  2 23  4 24
+21  9 14 16  7
+ 6 10  3 18  5
+ 1 12 20 15 19
+
+ 3 15  0  2 22
+ 9 18 13 17  5
+19  8  7 25 23
+20 11 10 24  4
+14 21 16 12  6
+
+14 21 17 24  4
+10 16 15  9 19
+18  8 23 26 20
+22 11 13  6  5
+ 2  0 12  3  7`;
+
 const callOrder = `67,3,19,4,64,39,85,14,84,93,79,26,61,24,65,63,15,69,48,8,82,75,36,96,16,49,28,40,97,38,76,91,83,7,62,94,21,95,6,10,43,17,31,34,81,23,52,60,54,29,70,12,35,0,57,45,20,71,78,44,90,2,33,68,53,92,50,73,88,47,58,5,9,87,22,13,18,30,59,56,99,11,77,55,72,32,37,89,42,27,66,41,86,51,74,1,46,25,98,80`;
 const rawBoards = `24 75 59 41 17
 58 74 64 92 39
@@ -726,3 +747,51 @@ const solvePart1 = (parsedBoards, numsToCall) => {
 };
 
 console.log("part 1 answer is", solvePart1(boards, callOrder.split(",")));
+
+/*
+--- Part Two ---
+On the other hand, it might be wise to try a different strategy: let the giant squid win.
+
+You aren't sure how many bingo boards a giant squid could play at once, so rather than waste time counting its arms, the safe thing to do is to figure out which board will win last and choose that one. That way, no matter which boards it picks, it will win for sure.
+
+In the above example, the second board is the last to win, which happens after 13 is eventually called and its middle column is completely marked. If you were to keep playing until this point, the second board would have a sum of unmarked numbers equal to 148 for a final score of 148 * 13 = 1924.
+
+Figure out which board will win last. Once it wins, what would its final score be?
+ */
+
+const countLosers = (boards) => {
+  return boards.reduce((count, board) => {
+    if (isWinningBoard(board)) {
+      return count;
+    }
+    return count + 1;
+  }, 0)
+};
+
+const findLoser = (boards) => {
+  return boards.find((board) => !isWinningBoard(board));
+}
+
+const solvePart2 = (parsedBoards, numsToCall) => {
+  let numsCalled = 0;
+  let loser;
+  while (numsCalled < numsToCall.length) {
+    // call a number, mark it as called on all boards
+    const currentNum = numsToCall[numsCalled];
+    parsedBoards = markAsCalled(parsedBoards, currentNum);
+    // count losers
+    const losersCount = countLosers(parsedBoards);
+    // if 1 loser: find it, score it
+    if (losersCount === 1) {
+      loser = findLoser(parsedBoards);
+    }
+    if (losersCount === 0) {
+      console.log({currentNum, sum: sumRemaining(loser), loser})
+      return currentNum * (sumRemaining(loser) - currentNum);
+    }
+    numsCalled++;
+  }
+};
+
+console.log('part 2 example answer is', solvePart2(parseBoards(rawExampleBoards), exampleCallOrder.split(",")));
+console.log('part 2 answer is', solvePart2(boards, callOrder.split(",")));
