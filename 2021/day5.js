@@ -48,7 +48,7 @@ const exampleInput = `0,9 -> 5,9
 0,9 -> 2,9
 3,4 -> 1,4
 0,0 -> 8,8
-5,5 -> 8,2`
+5,5 -> 8,2`;
 
 const puzzleInput = `223,805 -> 223,548
 609,164 -> 609,503
@@ -549,24 +549,24 @@ const puzzleInput = `223,805 -> 223,548
 355,186 -> 782,613
 866,435 -> 816,435
 96,161 -> 764,161
-971,29 -> 21,979`
+971,29 -> 21,979`;
 
 const getLines = (rawInput) => {
-  const lines = rawInput.split('\n');
+  const lines = rawInput.split("\n");
   return lines.map((line) => {
-    const [point1, point2] = line.split(' -> ');
-    const [y1, x1] = point1.split(',');
-    const [y2, x2] = point2.split(',');
+    const [point1, point2] = line.split(" -> ");
+    const [y1, x1] = point1.split(",");
+    const [y2, x2] = point2.split(",");
     return { x1, x2, y1, y2 };
   });
-}
+};
 
 const makeGrid = (x, y) => {
   const grid = [];
-  while (grid.length <= y) {
+  while (grid.length <= y + 1) {
     let row = [];
-    while (row.length <= x) {
-      row.push('.');
+    while (row.length <= x + 1) {
+      row.push(".");
     }
     grid.push(row);
   }
@@ -574,28 +574,32 @@ const makeGrid = (x, y) => {
 };
 
 const getMaxes = (lines) => {
-  return [...lines].reduce((maxes, line) => {
-    return {
-      yMax: Math.max(maxes.yMax, line.y1, line.y2),
-      xMax: Math.max(maxes.xMax, line.x1, line.x2),
-    }
-  }, { yMax: 0, xMax: 0 })
+  return [...lines].reduce(
+    (maxes, line) => {
+      return {
+        yMax: Math.max(maxes.yMax, line.y1, line.y2),
+        xMax: Math.max(maxes.xMax, line.x1, line.x2),
+      };
+    },
+    { yMax: 0, xMax: 0 }
+  );
 };
 
 const isHorizontalOrVertical = (line) => {
   return line.x1 === line.x2 || line.y1 === line.y2;
 };
 
-const printGrid = (grid) => '\n' + grid.map((row) => row.join('')).join('\n');
+const printGrid = (grid) =>
+  console.log("\n" + grid.map((row) => row.join("")).join("\n"));
 
 const incrementPoint = (x, y, grid) => {
-  if (grid[x][y] === '.') {
+  if (grid[x][y] === ".") {
     grid[x][y] = 1;
   } else {
     grid[x][y] = grid[x][y] + 1;
   }
   return grid;
-}
+};
 
 const drawHorVLine = (line, grid) => {
   const { x1, x2, y1, y2 } = line;
@@ -619,12 +623,15 @@ const drawHorVLine = (line, grid) => {
 
 const countTwos = (grid) => {
   return grid.reduce((totalCount, row) => {
-    return totalCount + row.reduce((rowCount, el) => {
-      if (el === 2) {
-        rowCount++;
-      }
-      return rowCount;
-    }, 0);
+    return (
+      totalCount +
+      row.reduce((rowCount, el) => {
+        if (el > 1) {
+          rowCount++;
+        }
+        return rowCount;
+      }, 0)
+    );
   }, 0);
 };
 
@@ -643,5 +650,5 @@ const solvePart1 = (puzzle) => {
   return countTwos(grid);
 };
 
-console.log('part 1 example answer is', solvePart1(exampleInput));
-console.log('part 1 answer is', solvePart1(puzzleInput));
+console.log("part 1 example answer is", solvePart1(exampleInput));
+console.log("part 1 answer is", solvePart1(puzzleInput));
