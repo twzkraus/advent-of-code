@@ -563,9 +563,9 @@ const getLines = (rawInput) => {
 
 const makeGrid = (x, y) => {
   const grid = [];
-  while (grid.length <= y + 1) {
+  while (grid.length <= y) {
     let row = [];
-    while (row.length <= x + 1) {
+    while (row.length <= x) {
       row.push(".");
     }
     grid.push(row);
@@ -599,6 +599,12 @@ const incrementPoint = (x, y, grid) => {
     grid[x][y] = grid[x][y] + 1;
   }
   return grid;
+};
+
+const highlightPoint = (x, y, grid) => {
+  const copy = JSON.parse(JSON.stringify(grid));
+  copy[x][y] = "*";
+  printGrid(copy);
 };
 
 const drawHorVLine = (line, grid) => {
@@ -639,7 +645,7 @@ const solvePart1 = (puzzle) => {
   // make grid
   const lines = getLines(puzzle);
   const { xMax, yMax } = getMaxes(lines);
-  let grid = makeGrid(xMax, yMax);
+  let grid = makeGrid(xMax, yMax + 1);
   // use inputs to draw lines
   lines.forEach((line) => {
     if (isHorizontalOrVertical(line)) {
@@ -652,3 +658,66 @@ const solvePart1 = (puzzle) => {
 
 console.log("part 1 example answer is", solvePart1(exampleInput));
 console.log("part 1 answer is", solvePart1(puzzleInput));
+/*
+Unfortunately, considering only horizontal and vertical lines doesn't give you the full picture; you need to also consider diagonal lines.
+
+Because of the limits of the hydrothermal vent mapping system, the lines in your list will only ever be horizontal, vertical, or a diagonal line at exactly 45 degrees. In other words:
+
+An entry like 1,1 -> 3,3 covers points 1,1, 2,2, and 3,3.
+An entry like 9,7 -> 7,9 covers points 9,7, 8,8, and 7,9.
+Considering all lines from the above example would now produce the following diagram:
+
+1.1....11.
+.111...2..
+..2.1.111.
+...1.2.2..
+.112313211
+...1.2....
+..1...1...
+.1.....1..
+1.......1.
+222111....
+You still need to determine the number of points where at least two lines overlap. In the above example, this is still anywhere in the diagram with a 2 or larger - now a total of 12 points.
+
+Consider all of the lines. At how many points do at least two lines overlap?
+*/
+
+const is45Degree = (line) => {
+  return Math.abs(line.x1 - line.x2) === Math.abs(line.y1 - line.y2);
+};
+
+const drawDiagonalLine = (line, grid) => {
+  const { x1, x2, y1, y2 } = line;
+  let xIncrementer = Math.abs(x2 - x1) / (x2 - x1);
+  let yIncrementer = Math.abs(y2 - y1) / (y2 - y1);
+  let xCurrent = parseInt(x1);
+  let yCurrent = parseInt(y1);
+  const lastX = parseInt(x2) + xIncrementer;
+
+  while (xCurrent !== lastX) {
+    grid = incrementPoint(xCurrent, yCurrent, grid);
+    xCurrent += xIncrementer;
+    yCurrent += yIncrementer;
+  }
+  return grid;
+};
+
+const solvePart2 = (puzzle) => {
+  // make grid
+  const lines = getLines(puzzle);
+  const { xMax, yMax } = getMaxes(lines);
+  let grid = makeGrid(xMax + 1, yMax + 1);
+  // use inputs to draw lines
+  lines.forEach((line) => {
+    if (isHorizontalOrVertical(line)) {
+      grid = drawHorVLine(line, grid);
+    } else if (is45Degree(line)) {
+      grid = drawDiagonalLine(line, grid);
+    }
+  });
+  // count 2's
+  return countTwos(grid);
+};
+
+console.log("part 2 example answer is", solvePart2(exampleInput));
+console.log("part 2 answer is", solvePart2(puzzleInput));
