@@ -2298,3 +2298,28 @@ const puzzleInput1 = `9686
 
 console.log("part1 example answer", solvePart1(exampleInput1));
 console.log("part1 answer", solvePart1(puzzleInput1));
+
+// part 2
+// i: same list of calories carried by each elf
+// o: number of calories carried by top 3 elves
+
+const solvePart2 = (puzzleInput) => {
+  let top3Calories = [0, 0, 0];
+  // sum each elf's calories
+  const perElfInput = puzzleInput.split("\n\n");
+  perElfInput.forEach((elfInput) => {
+    const thisElfCalories = elfInput.split("\n").reduce((total, rationCals) => {
+      return total + parseInt(rationCals);
+    }, 0);
+    if (thisElfCalories > top3Calories[2]) {
+      top3Calories[2] = thisElfCalories;
+    }
+    // sort top3 so the lowest value in top 3 will always be the last element in array
+    top3Calories.sort((a, b) => b - a);
+  });
+  // return the most calories across all elves
+  return top3Calories.reduce((total, cal) => cal + total);
+};
+
+console.log("part2 example answer", solvePart2(exampleInput1));
+console.log("part2 answer", solvePart2(puzzleInput1));
