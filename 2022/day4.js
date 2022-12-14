@@ -1063,17 +1063,66 @@ const solvePart1 = (puzzleInput) => {
   const pairs = puzzleInput.split("\n");
   return pairs.reduce((totalCount, pair) => {
     const [elf1Sections, elf2Sections] = pair.split(",");
+    // check whether one elf's minimum is LTE the other's AND their maximum is GTE the other's
     if (
       isFullyContained(elf1Sections, elf2Sections) ||
       isFullyContained(elf2Sections, elf1Sections)
     ) {
+      // if so, add it to the count
       totalCount++;
     }
     return totalCount;
   }, 0);
-  // check whether one elf's minimum is LTE the other's AND their maximum is GTE the other's
-  // if so, add it to the count
 };
 
 console.log(`part 1 example answer is ${solvePart1(exampleInput1)}`);
 console.log(`part 1 answer is ${solvePart1(puzzleInput1)}`);
+
+/*
+--- Part Two ---
+It seems like there is still quite a bit of duplicate work planned. Instead, the Elves would like to know the number of pairs that overlap at all.
+
+In the above example, the first two pairs (2-4,6-8 and 2-3,4-5) don't overlap, while the remaining four pairs (5-7,7-9, 2-8,3-7, 6-6,4-6, and 2-6,4-8) do overlap:
+
+5-7,7-9 overlaps in a single section, 7.
+2-8,3-7 overlaps all of the sections 3 through 7.
+6-6,4-6 overlaps in a single section, 6.
+2-6,4-8 overlaps in sections 4, 5, and 6.
+So, in this example, the number of overlapping assignment pairs is 4.
+
+In how many assignment pairs do the ranges overlap?
+*/
+
+// i: list of pairs of sections to clean
+// o: # of assignment pairs where the ranges overlap
+
+const doesOverlap = (sectionA, sectionB) => {
+  const [minA, maxA] = sectionA
+    .split("-")
+    .map((stringifiedNum) => parseInt(stringifiedNum));
+  const [minB, maxB] = sectionB
+    .split("-")
+    .map((stringifiedNum) => parseInt(stringifiedNum));
+
+  const sectionAContainsSomeB =
+    (minA <= minB && maxA >= minB) || (minA <= maxB && maxA >= maxB);
+  const sectionBContainsSomeA =
+    (minB <= minA && maxB >= minA) || (minB <= maxA && maxB >= maxA);
+  return sectionBContainsSomeA || sectionAContainsSomeB;
+};
+
+const solvePart2 = (puzzleInput) => {
+  // consider each pair
+  const pairs = puzzleInput.split("\n");
+  return pairs.reduce((totalCount, pair) => {
+    const [elf1Sections, elf2Sections] = pair.split(",");
+    // check whether the range overlaps at all (min or max of one is within the range of the other)
+    if (doesOverlap(elf1Sections, elf2Sections)) {
+      totalCount++;
+    }
+    return totalCount;
+  }, 0);
+  // if so, add it to the count
+};
+console.log(`part 2 example answer is ${solvePart2(exampleInput1)}`);
+console.log(`part 2 answer is ${solvePart2(puzzleInput1)}`);
