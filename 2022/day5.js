@@ -641,3 +641,83 @@ const solvePart1 = (drawing, steps) => {
 
 console.log("example 1 result is", solvePart1(exampleDrawing1, exampleSteps1));
 console.log("part 1 result is", solvePart1(drawing1, steps1));
+
+/*
+--- Part Two ---
+As you watch the crane operator expertly rearrange the crates, you notice the process isn't following your prediction.
+
+Some mud was covering the writing on the side of the crane, and you quickly wipe it away. The crane isn't a CrateMover 9000 - it's a CrateMover 9001.
+
+The CrateMover 9001 is notable for many new and exciting features: air conditioning, leather seats, an extra cup holder, and the ability to pick up and move multiple crates at once.
+
+Again considering the example above, the crates begin in the same configuration:
+
+    [D]    
+[N] [C]    
+[Z] [M] [P]
+ 1   2   3 
+Moving a single crate from stack 2 to stack 1 behaves the same as before:
+
+[D]        
+[N] [C]    
+[Z] [M] [P]
+ 1   2   3 
+However, the action of moving three crates from stack 1 to stack 3 means that those three moved crates stay in the same order, resulting in this new configuration:
+
+        [D]
+        [N]
+    [C] [Z]
+    [M] [P]
+ 1   2   3
+Next, as both crates are moved from stack 2 to stack 1, they retain their order as well:
+
+        [D]
+        [N]
+[C]     [Z]
+[M]     [P]
+ 1   2   3
+Finally, a single crate is still moved from stack 1 to stack 2, but now it's crate C that gets moved:
+
+        [D]
+        [N]
+        [Z]
+[M] [C] [P]
+ 1   2   3
+In this example, the CrateMover 9001 has put the crates in a totally different order: MCD.
+
+Before the rearrangement process finishes, update your simulation so that the Elves know where they should stand to be ready to unload the final supplies. After the rearrangement procedure completes, what crate ends up on top of each stack?
+
+*/
+
+// modification of above: don't push and pop values--take a subarray and retain its order
+
+const moveStacksInOrder = (stackState, numToMove, src, dest) => {
+  const initialTotalAtSrc = stackState[src]?.length;
+  const movingGroup = stackState[src].splice(initialTotalAtSrc - numToMove);
+
+  stackState[dest] = [...stackState[dest], ...movingGroup];
+  return stackState;
+};
+
+const solvePart2 = (drawing, steps) => {
+  // turn each stack into an array stack
+  let stacks = createCargoState(drawing);
+  // follow the steps by pop()-ing and push()-ing n times
+  steps.split("\n").forEach((step) => {
+    if (step) {
+      const instructionWords = step.split(" ");
+      const count = instructionWords[1];
+      const srcStack = instructionWords[3];
+      const destStack = instructionWords[5];
+
+      stacks = moveStacksInOrder(stacks, count, srcStack, destStack);
+    }
+  });
+  return getTopValFromEach(stacks);
+};
+
+console.log(
+  "part 2 example result is",
+  solvePart2(exampleDrawing1, exampleSteps1)
+);
+console.log("part 2 result is", solvePart2(drawing1, steps1));
