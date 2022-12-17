@@ -41,22 +41,26 @@ const puzzleInput1 = readFileSync("./day6-input.txt", "utf-8");
 // i: string of characters
 // o: position (1-indexed) of first time the last 4 characters are all unique
 
-const areCharsUnique = (arr) => {
-  const charSet = new Set(arr);
-  return charSet.size === 4;
+const areCharsUnique = (substr, markerSize) => {
+  const charSet = new Set(substr);
+  return charSet.size === markerSize;
 };
 
-const solvePart1 = (puzzleInput) => {
-  let i = 4;
-  let last4Chars = puzzleInput.slice(0, 4);
-  let charsAreUnique = areCharsUnique(last4Chars);
-  while (!charsAreUnique && i < puzzleInput.length) {
+const findFirstSetOfNUniqueChars = (entireString, n) => {
+  let i = n;
+  let lastNChars = entireString.slice(0, n);
+  let charsAreUnique = areCharsUnique(lastNChars, n);
+  while (!charsAreUnique && i < entireString.length) {
     i++;
-    last4Chars = puzzleInput.slice(i - 4, i);
-    charsAreUnique = areCharsUnique(last4Chars);
+    lastNChars = entireString.slice(i - n, i);
+    charsAreUnique = areCharsUnique(lastNChars, n);
   }
 
   return i;
+};
+
+const solvePart1 = (puzzleInput) => {
+  return findFirstSetOfNUniqueChars(puzzleInput, 4);
 };
 
 console.log(solvePart1(exampleInput1), "should be 5");
